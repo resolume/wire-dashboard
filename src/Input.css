@@ -1,0 +1,35 @@
+.input {
+    display: flex;
+    margin-bottom: 5px;
+}
+
+.input .header {
+    width: 100px;
+    text-align: right;
+    margin-right: 15px;
+    margin-bottom: 10px;
+    position: relative;
+    top: 4px;
+}
+
+.input.trigger button {
+    background-color: #4e4e4e;
+    border-color: transparent;
+    border-radius: 3px;
+    color: lightgray;
+}
+
+.input.trigger button:hover {
+    background-color: #656565;
+}
+
+.input.data input {
+    background-color: #222222;
+    border-color: transparent;
+    border-radius: 3px;
+    color: lightgray;
+}
+
+.input.data input[type='number'] {
+    appearance: textfield;
+}

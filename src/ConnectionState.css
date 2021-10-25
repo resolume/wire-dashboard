@@ -1,0 +1,24 @@
+.connection-state {
+    padding-top: 5px;
+    padding-bottom: 4px;
+    text-align: center;
+    position: absolute;
+    width: 350px;
+    top: 0px;
+    left: 0;
+    right: 0;
+    margin: auto;
+
+    border-bottom-left-radius: 3px;
+    border-bottom-right-radius: 3px;
+}
+
+.connection-state.connected {
+    background-color: green;
+    color: white;
+}
+
+.connection-state.disconnected {
+    background-color: red;
+    color: black;
+}

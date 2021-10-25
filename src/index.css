@@ -5,9 +5,15 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  background-color: #222222;
 }
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+#root {
+    margin: 25px;
+    border-radius: 15px;
+    padding: 20px;
+    padding-top: 45px;
+    position: relative;
+    background-color: #303030;
+    color: lightgray;
 }
