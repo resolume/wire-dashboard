@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import IInput, { DataType, IInputWithValues } from './IInput';
+import IInput, { DataType, Float4, IInputWithValues } from './IInput';
 import { useResolumeContext } from './ResolumeProvider';
 import RequestAction from './RequestAction';
 import './Input.css';
@@ -173,6 +173,46 @@ function InputTrigger(input: IInput) {
     )
 }
 
+function InputColor(input: IInputWithValues<Float4>) {
+    const { transport } = useResolumeContext();
+
+    const inputs = input.values.map((value, index) => {
+        // note: we ignore the alpha value (stored inside 'w')
+        const r = Math.round(value.x * 255).toString(16).padStart(2, '0');
+        const g = Math.round(value.y * 255).toString(16).padStart(2, '0');
+        const b = Math.round(value.z * 255).toString(16).padStart(2, '0');
+
+        const onChange = (event: any) => {
+            const color = {
+                x: parseInt(event.target.value.slice(1, 3), 16) / 255,
+                y: parseInt(event.target.value.slice(3, 5), 16) / 255,
+                z: parseInt(event.target.value.slice(5, 7), 16) / 255,
+                w: 1
+            }
+
+            const update = [...input.values];
+            update[index] = color;
+
+            transport.sendMessage({
+                action: RequestAction.Put,
+                path: `/input/${input.id}`,
+                values: update
+            });
+        };
+
+        return (
+            <input key={index} type="color" value={`#${r}${g}${b}`} onChange={onChange} />
+        )
+    });
+
+    return (
+        <div className="input color">
+            <div className="header">{input.name}</div>
+            {inputs}
+        </div>
+    )
+}
+
 
 function Input(input: IInput) {
     const { subscribe, unsubscribe } = useResolumeContext();
@@ -192,6 +232,8 @@ function Input(input: IInput) {
             return <InputData {...(input as IInputWithValues<string>)} />;
         case DataType.Boolean:
             return <InputBool {...(input as IInputWithValues<boolean>)} />;
+        case DataType.Float4:
+            return <InputColor {...(input as IInputWithValues<Float4>)} />;
         default:
             console.log('unknown type', input);
             return (null);

@@ -19,6 +19,13 @@ export const enum DataType {
     String = "string"
 };
 
+export interface Float4 {
+    x: number,
+    y: number,
+    z: number,
+    w: number
+}
+
 /**
  *  The properties all inputs have
  */
