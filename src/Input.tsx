@@ -44,6 +44,14 @@ function InputData<ValueType extends {}>(input: IInputWithValues<ValueType>) {
     })();
 
     const inputs = input.values.map((value, index) => {
+        // if we're rendering the input that is being edited right now we use the current
+        // value to show in the input, otherwise we'll use the value as set by the server
+        const data = index === active && current !== undefined ? current : value.toString();
+
+        // ensure min and max values are compatible with text input
+        const min = input.min?.toString() ?? undefined;
+        const max = input.max?.toString() ?? undefined;
+
         // making a change to an input will set the
         // current index and value - this will cause
         // the updated value to be rendered before
@@ -69,13 +77,32 @@ function InputData<ValueType extends {}>(input: IInputWithValues<ValueType>) {
             }
         };
 
-        // if we're rendering the input that is being edited right now we use the current
-        // value to show in the input, otherwise we'll use the value as set by the server
-        const data = index === active && current !== undefined ? current : value.toString();
+        const onStep = (add: number) => {
+            const update = [...input.values];
+            update[index] = formatter(data) + add;
 
-        // ensure min and max values are compatible with text input
-        const min = input.min?.toString() ?? undefined;
-        const max = input.max?.toString() ?? undefined;
+            transport.sendMessage({
+                action: RequestAction.Put,
+                path: `/input/${input.id}`,
+                values: update
+            });
+        };
+
+        // if we have both a minimum and maximum value we can show
+        // a range slider to move between the two boundaries
+        if (min && max) {
+            // we show 1000 steps over the available range
+            const step = ((input.max as unknown as number) - (input.min as unknown as number)) / 1000;
+
+            return (
+                <span className="input-with-slider" key={index}>
+                    <input type={type} onChange={onChange} onBlur={onBlur} min={min} max={max} step="any" value={data} />
+                    <button onClick={() => onStep(-step)}>-</button>
+                    <button onClick={() => onStep(+step)}>+</button>
+                    <input type="range" onChange={onChange} onBlur={onBlur} min={min} max={max} step={step} value={data} />
+                </span>
+            )
+        }
 
         return (
             <input type={type} key={index} onChange={onChange} onBlur={onBlur} min={min} max={max} value={data} />

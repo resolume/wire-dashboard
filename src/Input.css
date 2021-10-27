@@ -33,3 +33,40 @@
 .input.data input[type='number'] {
     appearance: textfield;
 }
+
+.input.data .input-with-slider button {
+    background-color: transparent;
+    border-color: transparent;
+    color: lightgray;
+    position: relative;
+    top: -1px;
+}
+
+.input.data .input-with-slider button:hover {
+    color: #ed732e;
+}
+
+.input.data .input-with-slider input[type='range'] {
+    position: relative;
+    outline: none;
+    top: 5px;
+    background-color: transparent;
+    border-color: transparent;
+}
+
+.input.data .input-with-slider input[type='range']::-moz-range-thumb {
+    background-color: #545454;
+    border-color: transparent;
+}
+
+.input.data .input-with-slider input[type='range']::-moz-range-track {
+    background-color: #1c1c1c;
+    border-color: transparent;
+    height: 5px;
+}
+
+.input.data .input-with-slider input[type='range']::-moz-range-progress {
+    background-color: #545454;
+    border-color: transparent;
+    height: 5px;
+}
