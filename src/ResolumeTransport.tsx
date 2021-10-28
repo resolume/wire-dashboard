@@ -49,8 +49,12 @@ class ResolumeTransport implements IResolumeTransport {
         }
     }
 
+    reconnect(): void {
+        this.connect(this.host, this.port);
+    }
+
     sendMessage(message: RequestMessage): void {
-        if (this.socket !== undefined) {
+        if (this.socket !== undefined && this.socket.readyState === 1) {
             this.socket.send(JSON.stringify(message));
             console.log('send', message);
         }

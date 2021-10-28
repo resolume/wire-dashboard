@@ -5,6 +5,7 @@ export type ResolumeMessageCallback = (message: ResponseMessage) => void;
 export type ResolumeConnectionCallback = (connected: boolean) => void;
 
 interface IResolumeTransport {
+    reconnect: () => void;
     sendMessage: (message: RequestMessage) => void;
     addMessageListener: (callback: ResolumeMessageCallback) => void;
     removeMessageListener: (callback: ResolumeMessageCallback) => void;
