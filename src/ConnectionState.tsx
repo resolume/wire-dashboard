@@ -7,7 +7,7 @@ import './ConnectionState.css';
  *  with product information if connected
  */
 function ConnectionState() {
-    const { connected, product } = useResolumeContext();
+    const { connected, transport, product } = useResolumeContext();
 
     if (connected) {
         return (
@@ -15,7 +15,10 @@ function ConnectionState() {
         )
     } else {
         return (
-            <span className="connection-state disconnected">Disconnected from server backend</span>
+            <span className="connection-state disconnected">
+                Disconnected from server backend, 
+                <button onClick={() => transport.reconnect()}>reconnect</button>
+            </span>
         )
     }
 }

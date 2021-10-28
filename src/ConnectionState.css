@@ -22,3 +22,16 @@
     background-color: red;
     color: black;
 }
+
+.connection-state.disconnected button {
+    background-color: Transparent;
+    border: none;
+    cursor: pointer;
+    overflow: hidden;
+    outline: none;
+    color: #1890ff
+}
+
+.connection-state.disconnected button:hover {
+    text-decoration: underline;
+}
