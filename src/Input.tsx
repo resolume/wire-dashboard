@@ -1,9 +1,51 @@
 import React, { useEffect, useState } from 'react';
-import IInput, { DataType, Float4, IInputWithValues } from './IInput';
+import IInput, { DataType, Float4, IInputWithValues, IInputIntWithChoices } from './IInput';
 import { useResolumeContext } from './ResolumeProvider';
 import RequestAction from './RequestAction';
 import './Input.css';
 
+
+/**
+ *  This is for showing an input containing a number
+ *  of choices
+ */
+function InputChoice(input: IInputIntWithChoices) {
+    const { transport } = useResolumeContext();
+
+    // all the select inputs to render
+    const selects = input.values.map((value, index) => {
+        // all the available choices for this select box
+        const choices = input.choices.map((choice, choiceIndex) => {
+            // the options start at the min-value
+            const currentValue = input.min! + choiceIndex;
+            const selected = value === currentValue
+
+            return <option key={choiceIndex} value={currentValue} selected={selected}>{choice} ({currentValue})</option>;
+        });
+
+        const onChange = (event: any) => {
+            const target = event.target;
+
+            const update = [...input.values];
+            update[index] = parseInt(target.options[target.selectedIndex].value, 10);
+
+            transport.sendMessage({
+                action: RequestAction.Put,
+                path: `/input/${input.id}`,
+                values: update
+            });
+        }
+
+        return <select key={index} onChange={onChange}>{choices}</select>;
+    });
+
+    return (
+        <div className="input select">
+            <div className="header">{input.name}</div>
+            {selects}
+        </div>
+    )
+}
 
 /**
  *  This is for showing an input showing regular
@@ -16,6 +58,11 @@ function InputData<ValueType extends {}>(input: IInputWithValues<ValueType>) {
     // that it was changed to - we display this value over the stored one
     const [ current , setCurrent ] = useState<string | undefined>(undefined);
     const [ active, setActive ] = useState<number | undefined>(undefined);
+
+    // choice inputs use a "semantic" instead of a proper type
+    if (input.datatype === DataType.Integer && input.semantic === "choice") {
+        return <InputChoice {... (input as IInput as IInputIntWithChoices)} />
+    }
 
     // the type parameter to pass to the input component - this restricts
     // editing to data that is compatible with what the input expects

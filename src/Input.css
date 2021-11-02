@@ -23,6 +23,12 @@
     background-color: #656565;
 }
 
+.input.select select {
+    background-color: #4e4e4e;
+    border-color: transparent;
+    border-radius: 3px;
+}
+
 .input.data input {
     background-color: #222222;
     border-color: transparent;

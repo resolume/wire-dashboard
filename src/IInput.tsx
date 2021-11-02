@@ -48,4 +48,14 @@ export interface IInputWithValues<ValueType> extends IInput {
     values: ValueType[]
 };
 
+/**
+ *  An input with choice values
+ */
+export interface IInputIntWithChoices extends IInput {
+    min: number,
+    max: number,
+    choices: string[],
+    values: number[]
+}
+
 export default IInput;
