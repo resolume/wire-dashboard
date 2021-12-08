@@ -1,7 +1,6 @@
 .inputs > .header {
-    width: 100px;
-    text-align: right;
     text-transform: uppercase;
     margin-bottom: 10px;
+    margin-left: 15px;
     font-weight: bold;
 }

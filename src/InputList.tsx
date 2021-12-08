@@ -10,9 +10,14 @@ function InputList() {
         <Input key={input.id} {...input} />
     );
 
+    const { display_name, description } = useResolumeContext().patch;
+
     return (
         <div className="inputs">
-            <div className="header">inputs</div>
+            <div className="header">
+                <span>inputs for </span>
+                <span title={description}>{display_name}</span>
+            </div>
             <div>{inputs}</div>
         </div>
     )

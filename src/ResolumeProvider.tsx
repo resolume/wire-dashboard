@@ -1,5 +1,6 @@
 import React, { createContext, useCallback, useContext, useEffect, useRef, useState } from 'react';
 import Product from './Product';
+import Patch, { PatchCategory } from './Patch';
 import IResolumeTransport from './IResolumeTransport';
 import ResolumeTransport from './ResolumeTransport';
 import ResponseMessage from './ResponseMessage';
@@ -13,6 +14,7 @@ import IInput from './IInput';
  */
 type ResolumeContextProperties = {
     product: Product,
+    patch: Patch,
     inputs: IInput[],
     connected: boolean,
     transport: IResolumeTransport,
@@ -40,8 +42,27 @@ const emptyProduct: Product = {
     revision: 0
 };
 
+const emptyPatch: Patch = {
+    description: "",
+    display_name: "",
+    category: PatchCategory.Source,
+    video: { width: 0, height: 0 },
+    credits: {
+        author: "",
+        vendor: "",
+        email: "",
+        url: ""
+    },
+    license: {
+        name: "",
+        file: ""
+    },
+    identifier: ""
+};
+
 const ResolumeProvider = (props: ResolumeContextParameters) => {
     const [ product, setProduct ] = useState<Product>(emptyProduct);
+    const [ patch, setPatch ] = useState<Patch>(emptyPatch);
     const [ inputs, setInputs ] = useState<IInput[]>([]);
     const [ connected, setConnected ] = useState<boolean>(false);
 
@@ -95,12 +116,18 @@ const ResolumeProvider = (props: ResolumeContextParameters) => {
             setConnected(connected);
 
             if (connected) {
-                const xhr = new XMLHttpRequest();
-                xhr.addEventListener('load', event => setProduct(JSON.parse(xhr.responseText)));
-                xhr.open('GET', `//${transport.host}:${transport.port}/api/v1/product`);
-                xhr.send();
+                const productXHR = new XMLHttpRequest();
+                productXHR.addEventListener('load', event => setProduct(JSON.parse(productXHR.responseText)));
+                productXHR.open('GET', `//${transport.host}:${transport.port}/api/v1/product`);
+                productXHR.send();
+
+                const patchXHR = new XMLHttpRequest();
+                patchXHR.addEventListener('load', event => setPatch(JSON.parse(patchXHR.responseText)));
+                patchXHR.open('GET', `//${transport.host}:${transport.port}/api/v1/patch`);
+                patchXHR.send();
             } else {
                 setProduct(emptyProduct);
+                setPatch(emptyPatch);
                 setInputs([]);
             }
         };
@@ -168,7 +195,7 @@ const ResolumeProvider = (props: ResolumeContextParameters) => {
     }, []);
 
     return (
-        <ResolumeContext.Provider value={{ product, inputs, connected, transport, subscribe, unsubscribe }}>
+        <ResolumeContext.Provider value={{ product, patch, inputs, connected, transport, subscribe, unsubscribe }}>
             {props.children}
         </ResolumeContext.Provider>
     );
