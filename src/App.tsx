@@ -27,10 +27,10 @@ function GetOption(production: string, development: string | undefined, fallback
  *
  *  In production we assume the same host and port as we're connected to,
  *  since we'll probably be served from within the wire server. On debug
- *  we default to localhost:8080, unless environment variables are set
+ *  we default to localhost:8081, unless environment variables are set
  */
 const host = GetOption(window.location.hostname, process.env.REACT_APP_HOST, '127.0.0.1');
-const port = parseInt(GetOption(window.location.port, process.env.REACT_APP_PORT, "8080"), 10);
+const port = parseInt(GetOption(window.location.port, process.env.REACT_APP_PORT, "8081"), 10);
 
 function App() {
     return (
