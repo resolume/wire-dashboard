@@ -108,6 +108,12 @@ const ResolumeProvider = (props: ResolumeContextParameters) => {
                 case ResponseType.InputRemoved:
                     // filter out the input with matching id
                     setInputs(inputs.filter(input => input.id !== message.response as number));
+                    break;
+                case ResponseType.InputsReordered:
+                    // we get a list of ids in the new order, so we can sort what we already have
+                    const ids = message.response as number[];
+                    setInputs([...inputs].sort((lhs, rhs) => ids.indexOf(lhs.id) - ids.indexOf(rhs.id)));
+                    break;
             }
         };
 

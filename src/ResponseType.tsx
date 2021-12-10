@@ -13,6 +13,7 @@ enum ResponseType {
     InputTriggered = "input_triggered",
     InputAdded = "input_added",
     InputRemoved = "input_removed",
+    InputsReordered = "inputs_reordered",
     Error = "error"
 };
 
