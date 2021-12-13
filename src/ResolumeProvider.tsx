@@ -80,6 +80,9 @@ const ResolumeProvider = (props: ResolumeContextParameters) => {
         // handle incoming messages
         const messageListener = (message: ResponseMessage) => {
             switch (message.type) {
+                case ResponseType.GetPatch:
+                    setPatch(message.response as Patch);
+                    break;
                 case ResponseType.GetInputs:
                     setInputs(message.response);
                     break;
@@ -122,15 +125,10 @@ const ResolumeProvider = (props: ResolumeContextParameters) => {
             setConnected(connected);
 
             if (connected) {
-                const productXHR = new XMLHttpRequest();
-                productXHR.addEventListener('load', event => setProduct(JSON.parse(productXHR.responseText)));
-                productXHR.open('GET', `//${transport.host}:${transport.port}/api/v1/product`);
-                productXHR.send();
-
-                const patchXHR = new XMLHttpRequest();
-                patchXHR.addEventListener('load', event => setPatch(JSON.parse(patchXHR.responseText)));
-                patchXHR.open('GET', `//${transport.host}:${transport.port}/api/v1/patch`);
-                patchXHR.send();
+                const xhr = new XMLHttpRequest();
+                xhr.addEventListener('load', event => setProduct(JSON.parse(xhr.responseText)));
+                xhr.open('GET', `//${transport.host}:${transport.port}/api/v1/product`);
+                xhr.send();
             } else {
                 setProduct(emptyProduct);
                 setPatch(emptyPatch);

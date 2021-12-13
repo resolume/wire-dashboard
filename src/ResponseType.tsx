@@ -4,6 +4,7 @@
  *  without a previous request
  */
 enum ResponseType {
+    GetPatch = "get_patch",
     GetInputIds = "get_input_ids",
     GetInputs = "get_inputs",
     GetInput = "get_input",
