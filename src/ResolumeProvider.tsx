@@ -91,7 +91,7 @@ const ResolumeProvider = (props: ResolumeContextParameters) => {
                 case ResponseType.InputSubscribed:
                     // replace the input with matching id with
                     // the updated value sent by the server
-                    setInputs(inputs.map(input => {
+                    setInputs(inputs => inputs.map(input => {
                         // the update to compare with
                         const update = message.response as IInput;
 
@@ -106,16 +106,16 @@ const ResolumeProvider = (props: ResolumeContextParameters) => {
                     break;
                 case ResponseType.InputAdded:
                     // add the new input to the existing inputs
-                    setInputs([...inputs, message.response as IInput]);
+                    setInputs(inputs => [...inputs, message.response as IInput]);
                     break;
                 case ResponseType.InputRemoved:
                     // filter out the input with matching id
-                    setInputs(inputs.filter(input => input.id !== message.response as number));
+                    setInputs(inputs => inputs.filter(input => input.id !== message.response as number));
                     break;
                 case ResponseType.InputsReordered:
                     // we get a list of ids in the new order, so we can sort what we already have
                     const ids = message.response as number[];
-                    setInputs([...inputs].sort((lhs, rhs) => ids.indexOf(lhs.id) - ids.indexOf(rhs.id)));
+                    setInputs(inputs => [...inputs].sort((lhs, rhs) => ids.indexOf(lhs.id) - ids.indexOf(rhs.id)));
                     break;
             }
         };
