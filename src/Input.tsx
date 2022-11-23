@@ -127,7 +127,7 @@ function InputData<ValueType extends {}>(input: IInputWithValues<ValueType>) {
         // a range slider to move between the two boundaries
         if (min && max) {
             // we show 1000 steps over the available range for floating point
-            const step = input.datatype == DataType.Float ? ((input.max as unknown as number) - (input.min as unknown as number)) / 1000 : 1;
+            const step = input.datatype === DataType.Float ? ((input.max as unknown as number) - (input.min as unknown as number)) / 1000 : 1;
 
             return (
                 <span className="input-with-slider" key={index}>
