@@ -39,23 +39,21 @@ interface IInput {
 };
 
 /**
+ *  A list of choices for an input
+ */
+type IOptionSet<ValueType> = {
+    [key: string]: ValueType
+};
+
+/**
  *  Inputs may contain values and/or a
  *  min and max value
  */
 export interface IInputWithValues<ValueType> extends IInput {
     min: ValueType | undefined,
     max: ValueType | undefined,
+    choices: IOptionSet<ValueType> | undefined;
     values: ValueType[]
 };
-
-/**
- *  An input with choice values
- */
-export interface IInputIntWithChoices extends IInput {
-    min: number,
-    max: number,
-    choices: string[],
-    values: number[]
-}
 
 export default IInput;

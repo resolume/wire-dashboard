@@ -1,51 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import IInput, { DataType, Float4, IInputWithValues, IInputIntWithChoices } from './IInput';
+import IInput, { DataType, Float4, IInputWithValues } from './IInput';
 import { useResolumeContext } from './ResolumeProvider';
 import RequestAction from './RequestAction';
 import './Input.css';
 
-
-/**
- *  This is for showing an input containing a number
- *  of choices
- */
-function InputChoice(input: IInputIntWithChoices) {
-    const { transport } = useResolumeContext();
-
-    // all the select inputs to render
-    const selects = input.values.map((value, index) => {
-        // all the available choices for this select box
-        const choices = input.choices.map((choice, choiceIndex) => {
-            // the options start at the min-value
-            const currentValue = input.min! + choiceIndex;
-            const selected = value === currentValue
-
-            return <option key={choiceIndex} value={currentValue} selected={selected}>{choice} ({currentValue})</option>;
-        });
-
-        const onChange = (event: any) => {
-            const target = event.target;
-
-            const update = [...input.values];
-            update[index] = parseInt(target.options[target.selectedIndex].value, 10);
-
-            transport.sendMessage({
-                action: RequestAction.Put,
-                path: `/input/${input.id}`,
-                values: update
-            });
-        }
-
-        return <select key={index} onChange={onChange}>{choices}</select>;
-    });
-
-    return (
-        <div className="input select">
-            <div className="header">{input.name}</div>
-            {selects}
-        </div>
-    )
-}
 
 /**
  *  This is for showing an input showing regular
@@ -56,12 +14,42 @@ function InputData<ValueType extends {}>(input: IInputWithValues<ValueType>) {
 
     // keep track of the currently-active input field and the value
     // that it was changed to - we display this value over the stored one
-    const [ current , setCurrent ] = useState<string | undefined>(undefined);
+    const [ current, setCurrent ] = useState<string | undefined>(undefined);
     const [ active, setActive ] = useState<number | undefined>(undefined);
 
-    // choice inputs use a "semantic" instead of a proper type
-    if (input.datatype === DataType.Integer && input.semantic === "choice") {
-        return <InputChoice {... (input as IInput as IInputIntWithChoices)} />
+    // if there are choices available we should show a dropdown
+    // instead of a regular text/number entry
+    if (input.choices && Object.entries(input.choices).length > 0) {
+        // all the select inputs to render
+        const selects = input.values.map((value, selectIndex) => {
+            const options = Object.entries(input.choices!).map((option, choiceIndex) => {
+                const [ label ] = option;
+                return <option key={choiceIndex} value={choiceIndex}>{label}</option>
+            });
+
+            const onChange = (event: any) => {
+                const target = event.target;
+
+                const update = [...input.values];
+                update[selectIndex] = Object.values(input.choices!)[target.selectedIndex];
+
+                transport.sendMessage({
+                    action: RequestAction.Put,
+                    path: `/input/${input.id}`,
+                    values: update
+                });
+            }
+
+            const currentIndex = Object.values(input.choices!).indexOf(value);
+            return <select key={selectIndex} onChange={onChange} value={currentIndex}>{options}</select>
+        });
+
+        return (
+            <div className="input select">
+                <div className="header">{input.name}</div>
+                {selects}
+            </div>
+        )
     }
 
     // the type parameter to pass to the input component - this restricts
@@ -138,12 +126,12 @@ function InputData<ValueType extends {}>(input: IInputWithValues<ValueType>) {
         // if we have both a minimum and maximum value we can show
         // a range slider to move between the two boundaries
         if (min && max) {
-            // we show 1000 steps over the available range
-            const step = ((input.max as unknown as number) - (input.min as unknown as number)) / 1000;
+            // we show 1000 steps over the available range for floating point
+            const step = input.datatype == DataType.Float ? ((input.max as unknown as number) - (input.min as unknown as number)) / 1000 : 1;
 
             return (
                 <span className="input-with-slider" key={index}>
-                    <input type={type} onChange={onChange} onBlur={onBlur} min={min} max={max} step="any" value={data} />
+                    <input type={type} onChange={onChange} onBlur={onBlur} min={min} max={max} step={step} value={data} />
                     <button onClick={() => onStep(-step)}>-</button>
                     <button onClick={() => onStep(+step)}>+</button>
                     <input type="range" onChange={onChange} onBlur={onBlur} min={min} max={max} step={step} value={data} />
