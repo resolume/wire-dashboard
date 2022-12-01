@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import IInput, { DataType, Float4, IInputWithValues } from './IInput';
+import IInput, { Flow, DataType, Float4, IInputWithValues } from './IInput';
 import { useResolumeContext } from './ResolumeProvider';
 import RequestAction from './RequestAction';
 import './Input.css';
@@ -87,13 +87,13 @@ function InputData<ValueType extends {}>(input: IInputWithValues<ValueType>) {
         const min = input.min?.toString() ?? undefined;
         const max = input.max?.toString() ?? undefined;
 
-        // making a change to an input will set the
-        // current index and value - this will cause
-        // the updated value to be rendered before
-        // it is actually sent to the server
-        const onChange = (event: any) => {
-            setCurrent(event.target.value);
-            setActive(index);
+        // commit changes to an input - for non-attribute
+        // inputs this happens directly, but if an input
+        // is set to attribute flow this can lead to issues
+        // if intermediate values are set
+        const commit = (event: any) => {
+            if (index !== active)
+                return;
 
             const update = [...input.values];
             update[index] = formatter(event.target.value);
@@ -103,13 +103,28 @@ function InputData<ValueType extends {}>(input: IInputWithValues<ValueType>) {
                 path: `/input/${input.id}`,
                 values: update
             });
+        }
+
+        // making a change to an input will set the
+        // current index and value - this will cause
+        // the updated value to be rendered before
+        // it is actually sent to the server
+        const onChange = (event: any) => {
+            setCurrent(event.target.value);
+            setActive(index);
+
+            if (input.flow != Flow.attribute)
+                commit(event);
         };
 
-        const onBlur = () => {
+        const onBlur = (event: any) => {
             if (index === active) {
                 setCurrent(undefined);
                 setActive(undefined);
             }
+
+            if (input.flow == Flow.attribute)
+                commit(event);
         };
 
         const onStep = (add: number) => {
@@ -134,7 +149,7 @@ function InputData<ValueType extends {}>(input: IInputWithValues<ValueType>) {
                     <input type={type} onChange={onChange} onBlur={onBlur} min={min} max={max} step={step} value={data} />
                     <button onClick={() => onStep(-step)}>-</button>
                     <button onClick={() => onStep(+step)}>+</button>
-                    <input type="range" onChange={onChange} onBlur={onBlur} min={min} max={max} step={step} value={data} />
+                    <input type="range" onChange={onChange} onBlur={onBlur} onMouseUp={onBlur} min={min} max={max} step={step} value={data} />
                 </span>
             )
         }

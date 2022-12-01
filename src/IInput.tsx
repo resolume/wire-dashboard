@@ -4,7 +4,8 @@
  */
 export const enum Flow {
     signal = "signal",
-    event = "event"
+    event = "event",
+    attribute = "attribute"
 };
 
 /**
