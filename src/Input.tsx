@@ -113,7 +113,7 @@ function InputData<ValueType extends {}>(input: IInputWithValues<ValueType>) {
             setCurrent(event.target.value);
             setActive(index);
 
-            if (input.flow != Flow.attribute)
+            if (input.flow !== Flow.attribute)
                 commit(event);
         };
 
@@ -123,7 +123,7 @@ function InputData<ValueType extends {}>(input: IInputWithValues<ValueType>) {
                 setActive(undefined);
             }
 
-            if (input.flow == Flow.attribute)
+            if (input.flow === Flow.attribute)
                 commit(event);
         };
 
