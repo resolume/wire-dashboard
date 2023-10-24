@@ -154,7 +154,7 @@ function InputData<ValueType extends {}>(input: IInputWithValues<ValueType>) {
                     <input type={type} onChange={onChange} onBlur={onBlur} min={min} max={max} step={step} value={data} />
                     <button onClick={() => onStep(-step)}>-</button>
                     <button onClick={() => onStep(+step)}>+</button>
-                    <input type="range" onChange={onChange} onFocus={onFocus} onBlur={onBlur} onMouseUp={onBlur} min={min} max={max} step={step} value={data} />
+                    <input type="range" onChange={onChange} onFocus={onFocus} onBlur={onBlur} min={min} max={max} step={step} value={data} />
                 </span>
             )
         }
