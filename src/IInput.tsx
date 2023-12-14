@@ -9,18 +9,18 @@ export const enum Flow {
 };
 
 /**
- *  The data type usde by the input
+ *  The data type used by the input
  */
 export const enum DataType {
     Trigger = "trigger",
     Float = "float",
     Integer = "int",
     Boolean = "bool",
-    Float4 = "float_4",
-    String = "string"
+    String = "string",
+    Color = "color"
 };
 
-export interface Float4 {
+export interface Color {
     x: number,
     y: number,
     z: number,

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import IInput, { Flow, DataType, Float4, IInputWithValues } from './IInput';
+import IInput, { Flow, DataType, Color, IInputWithValues } from './IInput';
 import { useResolumeContext } from './ResolumeProvider';
 import RequestAction from './RequestAction';
 import './Input.css';
@@ -228,7 +228,7 @@ function InputTrigger(input: IInput) {
     )
 }
 
-function InputColor(input: IInputWithValues<Float4>) {
+function InputColor(input: IInputWithValues<Color>) {
     const { transport } = useResolumeContext();
 
     const inputs = input.values.map((value, index) => {
@@ -287,8 +287,8 @@ function Input(input: IInput) {
             return <InputData {...(input as IInputWithValues<string>)} />;
         case DataType.Boolean:
             return <InputBool {...(input as IInputWithValues<boolean>)} />;
-        case DataType.Float4:
-            return <InputColor {...(input as IInputWithValues<Float4>)} />;
+        case DataType.Color:
+            return <InputColor {...(input as IInputWithValues<Color>)} />;
         default:
             console.log('unknown type', input);
             return (null);
