@@ -1,4 +1,4 @@
-import ResponseType from './ResponseType';
+import ResponseType from './ResponseType.d';
 
 /**
  *  The interface all messages from the server

@@ -4,8 +4,9 @@ import Patch, { PatchCategory } from './Patch';
 import IResolumeTransport from './IResolumeTransport';
 import ResolumeTransport from './ResolumeTransport';
 import ResponseMessage from './ResponseMessage';
-import ResponseType from './ResponseType';
+import ResponseType from './ResponseType.d';
 import RequestAction from './RequestAction';
+import IInputGroup from './IInputGroup.d';
 import IInput from './IInput';
 
 /**
@@ -15,7 +16,7 @@ import IInput from './IInput';
 type ResolumeContextProperties = {
     product: Product,
     patch: Patch,
-    inputs: IInput[],
+    inputs: (IInput | IInputGroup)[],
     connected: boolean,
     transport: IResolumeTransport,
     subscribe: (id: number) => void,
@@ -63,7 +64,7 @@ const emptyPatch: Patch = {
 const ResolumeProvider = (props: ResolumeContextParameters) => {
     const [ product, setProduct ] = useState<Product>(emptyProduct);
     const [ patch, setPatch ] = useState<Patch>(emptyPatch);
-    const [ inputs, setInputs ] = useState<IInput[]>([]);
+    const [ inputs, setInputs ] = useState<(IInput | IInputGroup)[]>([]);
     const [ connected, setConnected ] = useState<boolean>(false);
 
     const transportRef = useRef<ResolumeTransport>(new ResolumeTransport());
@@ -109,13 +110,29 @@ const ResolumeProvider = (props: ResolumeContextParameters) => {
                     setInputs(inputs => [...inputs, message.response as IInput]);
                     break;
                 case ResponseType.InputRemoved:
-                    // filter out the input with matching id
+                case ResponseType.InputGroupRemoved:
+                    // filter out the input or group with matching id
                     setInputs(inputs => inputs.filter(input => input.id !== message.response as number));
                     break;
                 case ResponseType.InputsReordered:
-                    // we get a list of ids in the new order, so we can sort what we already have
-                    const ids = message.response as number[];
-                    setInputs(inputs => [...inputs].sort((lhs, rhs) => ids.indexOf(lhs.id) - ids.indexOf(rhs.id)));
+                    // this means no changes to the inputs, but just some form
+                    // of order change, or inputs moved to/from froup - this sends
+                    // all the input data, since apparantly it's too hard to just
+                    // send the changes to the actual ordering from wire
+                    setInputs(message.response);
+                    break;
+                case ResponseType.InputGroupAdded:
+                    // add the new group to the existing inputs
+                    setInputs(inputs => [...inputs, message.response as IInputGroup]);
+                    break;
+                case ResponseType.InputGroupRenamed:
+                    setInputs(inputs => {
+                        const group = message.response as IInputGroup;
+                        const index = inputs.findIndex(input => input.id === group.id);
+
+                        inputs[index] = group;
+                        return inputs;
+                    });
                     break;
             }
         };
