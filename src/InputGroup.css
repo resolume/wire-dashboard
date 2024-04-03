@@ -1,0 +1,15 @@
+.input_group {
+    margin-top: 18px;
+    border-radius: 15px;
+    background-color: #383838;
+}
+
+.input_group .title {
+    position: relative;
+    border-radius: 5px;
+    background-color: #383838;
+    display: inline-block;
+    padding: 2px;
+    top: -10px;
+    left: 8px;
+}
