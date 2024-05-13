@@ -23,5 +23,5 @@ jobs:
       - name: Upload compiled build
         uses: actions/upload-artifact@v3
         with:
-          name: wire-dashboard build
+          name: build
           path: build

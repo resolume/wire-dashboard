@@ -1,8 +1,33 @@
 image: gitlab.resolume.com:4567/resolume/containers/github-actions/act:latest
 
+stages:
+  - build
+  - bundle
+
 build:
   tags:
     - docker
   stage: build
   script:
+    # run jobs defined using github actions
     - act
+    # copy over the builds and unzip all zipped files
+    - cp -r /tmp/artifacts/1/build .
+    - for file in $(find build -name '*.gz__'); do
+        mv $file $(dirname $file)/$(basename $file __);
+        gunzip $(dirname $file)/$(basename $file __);
+      done
+  artifacts:
+    paths:
+      - build
+
+bundle:
+  tags:
+    - docker
+  stage: bundle
+  needs: [ build ]
+  script:
+    - echo "This is a wrapper job to copy artifacts."
+  artifacts:
+    paths:
+      - build
