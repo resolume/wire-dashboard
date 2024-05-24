@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import IInput, { Flow, DataType, Color, IInputWithValues } from './IInput';
+import IInput, { Flow, DataType, Unit, Color, IInputWithValues } from './IInput';
 import { useResolumeContext } from './ResolumeProvider';
 import RequestAction from './RequestAction';
 import './Input.css';
@@ -64,6 +64,30 @@ function InputData<ValueType extends {}>(input: IInputWithValues<ValueType>) {
         }
     })();
 
+    // the unit to show for the inputs
+    const unit = ((): string => {
+        switch (input.unit) {
+            case Unit.Milliseconds:
+                return "ms";
+            case Unit.Seconds:
+                return "s";
+            case Unit.Hertz:
+                return "hz";
+            case Unit.Percent:
+                return "%";
+            case Unit.Degrees:
+                return "°";
+            case Unit.Decibels:
+                return "dB";
+            case Unit.Pixels:
+                return "px";
+            case Unit.Factor:
+                return "x";
+            default:
+                return "";
+        }
+    })();
+
     // we have to use any as return type here, because otherwise TS
     // will infer the return type to be number | string, which is not
     // assignable to ValueType (of course)
@@ -79,9 +103,14 @@ function InputData<ValueType extends {}>(input: IInputWithValues<ValueType>) {
     })();
 
     const inputs = input.values.map((value, index) => {
-        // if we're rendering the input that is being edited right now we use the current
-        // value to show in the input, otherwise we'll use the value as set by the server
-        const data = index === active && current !== undefined ? current : value.toString();
+        // if we're rendering the input that is being edited right now we use the current value
+        // to show in the input, otherwise we'll use the value as set by the server and tack on
+        // the unit the user has selected (which we remove during editing, just like Wire does)
+        const data = index === active && current !== undefined
+            ? current ?? value.toString()
+            : `${value.toString()}`;
+
+        //`{value.toString()} {unit}`
 
         // ensure min and max values are compatible with text input
         const min = input.min?.toString() ?? undefined;
@@ -149,9 +178,14 @@ function InputData<ValueType extends {}>(input: IInputWithValues<ValueType>) {
             // we show 1000 steps over the available range for floating point
             const step = input.datatype === DataType.Float ? ((input.max as unknown as number) - (input.min as unknown as number)) / 1000 : 1;
 
+            // render as text and add the unit when we are not active
+            const element = (index !== active)
+                ? <input type="text" onFocus={onFocus} value={`${data} ${unit}`} />
+                : <input type={type} autoFocus={true} onChange={onChange} onBlur={onBlur} min={min} max={max} step={step} value={data} />
+
             return (
                 <span className="input-with-slider" key={index}>
-                    <input type={type} onChange={onChange} onBlur={onBlur} min={min} max={max} step={step} value={data} />
+                    {element}
                     <button onClick={() => onStep(-step)}>-</button>
                     <button onClick={() => onStep(+step)}>+</button>
                     <input type="range" onChange={onChange} onFocus={onFocus} onBlur={onBlur} min={min} max={max} step={step} value={data} />
@@ -159,9 +193,10 @@ function InputData<ValueType extends {}>(input: IInputWithValues<ValueType>) {
             )
         }
 
-        return (
-            <input type={type} key={index} onChange={onChange} onBlur={onBlur} min={min} max={max} value={data} />
-        )
+        // render as text and add the unit when we are not active
+        return (index !== active)
+            ? (<input type="text" key={index} onFocus={onFocus} value={`${data} ${unit}`} /> )
+            : (<input type={type} autoFocus={true} key={index} onChange={onChange} onBlur={onBlur} min={min} max={max} value={data} />)
     });
 
     return (
