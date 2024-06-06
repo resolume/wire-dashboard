@@ -20,6 +20,21 @@ export const enum DataType {
     Color = "color"
 };
 
+/**
+ *  The unit semantic for the input
+ */
+export const enum Unit {
+    None = "none",
+    Milliseconds = "milliseconds",
+    Seconds = "seconds",
+    Hertz = "hertz",
+    Percent = "percent",
+    Degrees = "degrees",
+    Decibels = "decibels",
+    Pixels = "pixels",
+    Factor = "factor"
+};
+
 export interface Color {
     x: number,
     y: number,
@@ -36,6 +51,7 @@ interface IInput {
     semantic: string,
     flow: Flow
     datatype: DataType,
+    unit: Unit,
     instance_count: number
 };
 
